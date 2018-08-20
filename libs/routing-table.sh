@@ -29,7 +29,7 @@ function determine_gateways_of_interfaces()
     fi
 
     if [[ "${GATEWAY_INTERFACE_TUNNEL}" == "" ]]; then
-        exception 1 "No default gateway for default interface found."
+        exception 1 "No tunnel gateway for default interface found."
     fi
 
 }
