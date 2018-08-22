@@ -20,7 +20,7 @@ ABSOLUTE_DIRPATH="$(dirname "${ABSOLUTE_DIRPATH}")"
 
 # loads libraries
 . "${ABSOLUTE_DIRPATH}/libs/exception.sh"
-. "${ABSOLUTE_DIRPATH}/libs/colors.sh"
+. "${ABSOLUTE_DIRPATH}/libs/formatting.sh"
 . "${ABSOLUTE_DIRPATH}/libs/usage.sh"
 . "${ABSOLUTE_DIRPATH}/libs/input-parser.sh"
 . "${ABSOLUTE_DIRPATH}/libs/network.sh"
