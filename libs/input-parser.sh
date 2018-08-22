@@ -4,6 +4,7 @@ VERIFY=0
 
 function parse_input()
 {
+    # TODO: better handling
     if [[ $# -ne 6 ]] && [[ $# -ne 7 ]]; then
         usage
         exit 1
