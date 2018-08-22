@@ -3,8 +3,8 @@ function alter_routing_table()
     echo
     echo "${FORMAT_BOLD}Transforming routing table${FORMAT_NORMAL}"
 
-    # determines gateways of specified interfaces
-    determine_gateways_of_interfaces
+    # get gateways of specified interfaces
+    get_gateways_of_interfaces
 
     # deletes default routes of specified interfaces
     delete_default_routes_of_interfaces
@@ -19,11 +19,10 @@ function alter_routing_table()
     verify_routes
 }
 
-function determine_gateways_of_interfaces()
+function get_gateways_of_interfaces()
 {
-    GATEWAY_INTERFACE_DEFAULT="$(netstat -nrf inet | egrep '^default\s+([^\s]+)(\s+[^\s]+){3}\s+' | egrep "${INTERFACE_DEFAULT}$" | awk '{print $2}' || echo "")"
-    GATEWAY_INTERFACE_TUNNEL="$(netstat -nrf inet | egrep '^default\s+([^\s]+)(\s+[^\s]+){3}\s+' | egrep "${INTERFACE_TUNNEL}$" | awk '{print $2}' || echo "")"
-
+    GATEWAY_INTERFACE_DEFAULT="$(get_gateway_of_interface "${INTERFACE_DEFAULT}")"
+    GATEWAY_INTERFACE_TUNNEL="$(get_gateway_of_interface "${INTERFACE_TUNNEL}")"
 
     if [[ "${GATEWAY_INTERFACE_DEFAULT}" == "" ]]; then
         exception 1 "No default gateway for default interface found."
@@ -41,6 +40,17 @@ function determine_gateways_of_interfaces()
 
     echo -n "   "
     echo "Tunnel (interface ${INTERFACE_TUNNEL}): ${GATEWAY_INTERFACE_TUNNEL}"
+}
+
+function get_gateway_of_interface()
+{
+    if [[ $# -ne 1 ]]; then
+        exception 1 "Improper function call: ${FUNCNAME[0]} <interface-name>"
+    fi
+
+    interface_name="$1"
+
+    netstat -nrf inet | egrep '^default\s+([^\s]+)(\s+[^\s]+){3}\s+' | egrep "${interface_name}$" | awk '{print $2}' || echo ""
 }
 
 function delete_default_routes_of_interfaces()
