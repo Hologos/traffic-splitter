@@ -1,6 +1,7 @@
 function alter_routing_table()
 {
-    echo "Transforming routing table."
+    echo
+    echo "${FORMAT_BOLD}Transforming routing table${FORMAT_NORMAL}"
 
     # determines gateways of specified interfaces
     determine_gateways_of_interfaces
@@ -32,6 +33,14 @@ function determine_gateways_of_interfaces()
         exception 1 "No tunnel gateway for default interface found."
     fi
 
+    echo -n "   "
+    echo "${FORMAT_UNDERLINE}Discovered gateways${FORMAT_NORMAL}"
+
+    echo -n "   "
+    echo "Default (interface ${INTERFACE_DEFAULT}): ${GATEWAY_INTERFACE_DEFAULT}"
+
+    echo -n "   "
+    echo "Tunnel (interface ${INTERFACE_TUNNEL}): ${GATEWAY_INTERFACE_TUNNEL}"
 }
 
 function delete_default_routes_of_interfaces()
@@ -47,18 +56,33 @@ function add_default_route_for_default_interface()
 
 function add_routes_for_tunnel_interface()
 {
+    echo
+    echo -n "   "
+    echo "${FORMAT_UNDERLINE}Tunnel routes (interface: ${INTERFACE_TUNNEL})${FORMAT_NORMAL}"
+
     for subnet in ${SUBNETS_TUNNEL}; do
+        echo -n "   "
+        echo "${subnet}"
+
         route -n add -net "${subnet}" "${GATEWAY_INTERFACE_TUNNEL}" > /dev/null #2>&1 # TODO: consider uncomment or removal
     done
 }
 
 function verify_routes()
 {
-    echo "Verifying routes:"
+    echo
+    echo "${FORMAT_BOLD}Verifying routes${FORMAT_NORMAL}"
+
+    echo -n "   "
+    echo "${FORMAT_UNDERLINE}Tunnel (interface: ${INTERFACE_TUNNEL})${FORMAT_NORMAL}"
 
     for hostname_to_test in ${TEST_HOSTNAMES_TUNNEL}; do
         verify_route "${hostname_to_test}"
     done
+
+    echo
+    echo -n "   "
+    echo "${FORMAT_UNDERLINE}Default (interface: ${INTERFACE_DEFAULT})${FORMAT_NORMAL}"
 
     for hostname_to_test in ${TEST_HOSTNAMES_DEFAULT}; do
         verify_route "${hostname_to_test}"
