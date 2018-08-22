@@ -47,7 +47,7 @@ function add_default_route_for_default_interface()
 
 function add_routes_for_tunnel_interface()
 {
-    for subnet in 10.89 172.24.0.0/13; do
+    for subnet in ${SUBNETS_TUNNEL}; do
         route -n add -net "${subnet}" "${GATEWAY_INTERFACE_TUNNEL}" > /dev/null #2>&1 # TODO: consider uncomment or removal
     done
 }
@@ -56,15 +56,30 @@ function verify_routes()
 {
     echo "Verifying routes:"
 
-    for test_hostname in "google.com" "seznam.cz" "prod-system.local" "dev-system.local" "non.existant.hostname"; do
-        test_result="$(route get "${test_hostname}" 2> /dev/null | egrep 'interface:\s+([^\s]+)' | awk '{ print $2 }' || echo "")"
-
-        echo -n "   "
-
-        if [[ "${test_result}" != "" ]]; then
-            echo "${test_hostname} ... ${FORMAT_FOREGROUND_GREEN}ok${FORMAT_NORMAL}"
-        else
-            echo "${test_hostname} ... ${FORMAT_FOREGROUND_RED}error${FORMAT_NORMAL}"
-        fi
+    for hostname_to_test in ${TEST_HOSTNAMES_TUNNEL}; do
+        verify_route "${hostname_to_test}"
     done
+
+    for hostname_to_test in ${TEST_HOSTNAMES_DEFAULT}; do
+        verify_route "${hostname_to_test}"
+    done
+}
+
+function verify_route()
+{
+    if [[ $# -ne 1 ]]; then
+        exception 1 "Improper function call: ${FUNCNAME[0]} <hostname-to-test>"
+    fi
+
+    hostname_to_test="$1"
+
+    test_result="$(route get "${hostname_to_test}" 2> /dev/null | egrep 'interface:\s+([^\s]+)' | awk '{ print $2 }' || echo "")"
+
+    echo -n "   "
+
+    if [[ "${test_result}" != "" ]]; then
+        echo "${hostname_to_test} ... ${FORMAT_FOREGROUND_GREEN}ok${FORMAT_NORMAL}"
+    else
+        echo "${hostname_to_test} ... ${FORMAT_FOREGROUND_RED}error${FORMAT_NORMAL}"
+    fi
 }

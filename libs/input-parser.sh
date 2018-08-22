@@ -4,13 +4,23 @@ VERIFY=0
 
 function parse_input()
 {
-    if [[ $# -ne 4 ]] && [[ $# -ne 5 ]]; then
+    if [[ $# -ne 6 ]] && [[ $# -ne 7 ]]; then
         usage
         exit 1
     fi
 
     while [[ $# -ne 0 ]] && [[ "$1" != "" ]]; do
         case $1 in
+            -c | --config)
+                shift
+
+                if [[ $# -lt 1 ]]; then
+                    exception 1 "Missing config filepath."
+                fi
+
+                CONFIG_FILEPATH="$1"
+            ;;
+
             -d | --default-interface)
                 shift
 

@@ -25,6 +25,7 @@ ABSOLUTE_DIRPATH="$(dirname "${ABSOLUTE_DIRPATH}")"
 . "${ABSOLUTE_DIRPATH}/libs/input-parser.sh"
 . "${ABSOLUTE_DIRPATH}/libs/network.sh"
 . "${ABSOLUTE_DIRPATH}/libs/routing-table.sh"
+. "${ABSOLUTE_DIRPATH}/libs/yaml-parser.sh"
 
 # checks if this is supported OS
 if [[ "$(uname)" != "Darwin" ]]; then
@@ -41,6 +42,13 @@ parse_input "$@"
 
 # verifies specified network interfaces
 verify_network_interfaces
+
+# TODO: get config filepath via input parameter
+CONFIG_CONTENT="$(yaml_load "${CONFIG_FILEPATH}")"
+
+SUBNETS_TUNNEL="$(yaml_get_value "${CONFIG_CONTENT}" "tunnel")"
+TEST_HOSTNAMES_TUNNEL="$(yaml_get_value "${CONFIG_CONTENT}" "tests:tunnel")"
+TEST_HOSTNAMES_DEFAULT="$(yaml_get_value "${CONFIG_CONTENT}" "tests:default")"
 
 # restarts specified network interaces
 if [[ "${RESTART}" -eq 1 ]]; then
