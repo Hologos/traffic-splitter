@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# determines absolute dirpath of the script
+ABSOLUTE_DIRPATH=""
+
+if [[ -L "$0" ]]; then
+    ABSOLUTE_DIRPATH="$(readlink "$0" || echo "")"
+
+    if [[ "${ABSOLUTE_DIRPATH}" == "" ]]; then
+        >&2 echo "Cannot determine real path of the script."
+        exit 1
+    fi
+else
+    ABSOLUTE_DIRPATH="$0"
+fi
+
+ABSOLUTE_DIRPATH="$(dirname "${ABSOLUTE_DIRPATH}")"
+
+# loads libraries
+. "${ABSOLUTE_DIRPATH}/libs/exception.sh"
+. "${ABSOLUTE_DIRPATH}/libs/formatting.sh"
+. "${ABSOLUTE_DIRPATH}/libs/usage.sh"
+. "${ABSOLUTE_DIRPATH}/libs/input-parser.sh"
+. "${ABSOLUTE_DIRPATH}/libs/network.sh"
+. "${ABSOLUTE_DIRPATH}/libs/routing-table.sh"
+. "${ABSOLUTE_DIRPATH}/libs/yaml-parser.sh"
+
+# checks if this is supported OS
+if [[ "$(uname)" != "Darwin" ]]; then
+    exception 1 "Only macOS is supported operating system."
+fi
+
+# checks if user has root priviledges
+if [[ "${EUID}" != "0" ]]; then
+    exception 1 "Please, run this command as root (or with sudo)."
+fi
+
+# checks input params
+parse_input "$@"
+
+# verifies specified network interfaces
+verify_network_interfaces
+
+# TODO: get config filepath via input parameter
+CONFIG_CONTENT="$(yaml_load "${CONFIG_FILEPATH}")"
+
+SUBNETS_TUNNEL="$(yaml_get_value "${CONFIG_CONTENT}" "tunnel")"
+TEST_HOSTNAMES_TUNNEL="$(yaml_get_value "${CONFIG_CONTENT}" "tests:tunnel")"
+TEST_HOSTNAMES_DEFAULT="$(yaml_get_value "${CONFIG_CONTENT}" "tests:default")"
+
+# restarts specified network interaces
+if [[ "${RESTART}" -eq 1 ]]; then
+    restart_network_interfaces
+fi
+
+# alters routing table
+if [[ "${ALTER}" -eq 1 ]]; then
+    alter_routing_table
+fi
+
+# verifies routes
+if [[ "${VERIFY}" -eq 1 ]]; then
+    verify_routes
+fi

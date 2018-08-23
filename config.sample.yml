@@ -1,0 +1,12 @@
+---
+tunnel:
+    - 10.0.1.0/24
+    - 10.0.2.0/24
+
+tests:
+    default:
+        - "google.cz"
+        - "seznam.cz"
+    tunnel:
+        - "dev-system.local"
+        - "prod-system.local"
