@@ -6,8 +6,10 @@ traffic-splitter alters the routing table and enables you to route some traffic 
 
 ```
 # route some traffic via interface en0, the rest via interface en2
-sudo traffic-splitter -d en2 -t en0 -c config.dev.yml
+sudo traffic-splitter -r -c config.test.yml -t en0 -d en2
 ```
+
+![](documentation/traffic-splitter.showoff.gif)
 
 # Disclaimer
 
