@@ -44,30 +44,36 @@ function get_network_interface_status()
     get_network_interface_details "${interface_name}" | egrep '^\s+status:' | cut -d" " -f 2 || echo ""
 }
 
+function restart_and_check_network_interfaces()
+{
+    restart_network_interfaces &
+    sleep 1
+    check_network_status
+}
+
 function restart_network_interfaces()
 {
-    echo
-    echo "${FORMAT_BOLD}Restarting network interfaces${FORMAT_NORMAL}"
+    for interface_status in "down" "up"; do
+        for interface_name in "${INTERFACE_DEFAULT}" "${INTERFACE_TUNNEL}"; do
+            set_network_interface_status "${interface_name}" "${interface_status}"
+        done
+    done
+}
 
-    echo -n "   "
-    echo "Shutting down interface ${INTERFACE_DEFAULT}."
-    echo -n "   "
-    echo "Shutting down interface ${INTERFACE_TUNNEL}."
+function set_network_interface_status()
+{
+    if [[ $# -ne 2 ]]; then
+        exception 1 "Improper function call: ${FUNCNAME[0]} <interface-name> <interface-status>"
+    fi
 
-    ifconfig "${INTERFACE_DEFAULT}" down
-    ifconfig "${INTERFACE_TUNNEL}" down
+    local interface_name="$1"
+    local interface_status="$2"
 
-    sleep 2
+    if [[ "${interface_status}" != "up" ]] && [[ "${interface_status}" != "down" ]]; then
+        exception 1 "Forbidden interface status '${interface_status}'."
+    fi
 
-    echo -n "   "
-    echo "Starting up interface ${INTERFACE_DEFAULT}."
-    echo -n "   "
-    echo "Starting up interface ${INTERFACE_TUNNEL}."
-
-    ifconfig "${INTERFACE_DEFAULT}" up
-    ifconfig "${INTERFACE_TUNNEL}" up
-
-    check_network_status
+    ifconfig "${interface_name}" "${interface_status}"
 }
 
 function check_network_status()
