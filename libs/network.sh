@@ -75,8 +75,6 @@ function check_network_status()
     echo
     echo "${FORMAT_BOLD}Restarting network interfaces${FORMAT_NORMAL}"
 
-    checked_network_interface="${INTERFACE_DEFAULT}"
-
     local interface_statuses=()
     local counter=0
 
