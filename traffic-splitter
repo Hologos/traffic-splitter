@@ -52,7 +52,7 @@ TEST_HOSTNAMES_DEFAULT="$(yaml_get_value "${CONFIG_CONTENT}" "tests:default")"
 
 # restarts specified network interaces
 if [[ "${RESTART}" -eq 1 ]]; then
-    restart_network_interfaces
+    restart_and_check_network_interfaces
 fi
 
 # alters routing table

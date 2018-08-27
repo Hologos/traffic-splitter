@@ -9,8 +9,8 @@ function verify_network_interfaces()
     fi
 
     for interface_name in "${INTERFACE_DEFAULT}" "${INTERFACE_TUNNEL}"; do
-        interface_setup="$(get_network_interface_details "${interface_name}")"
-        interface_status="$(get_network_interface_status "${interface_name}")"
+        local interface_setup="$(get_network_interface_details "${interface_name}")"
+        local interface_status="$(get_network_interface_status "${interface_name}")"
 
         if [[ "${interface_setup}" == "" ]]; then
             exception 1 "Interface ${interface} doesn't exist."
@@ -28,7 +28,7 @@ function get_network_interface_details()
         exception 1 "Improper function call: ${FUNCNAME[0]} <interface-name>"
     fi
 
-    interface_name="$1"
+    local interface_name="$1"
 
     ifconfig "${interface_name}" 2> /dev/null || echo ""
 }
@@ -39,35 +39,41 @@ function get_network_interface_status()
         exception 1 "Improper function call: ${FUNCNAME[0]} <interface-name>"
     fi
 
-    interface_name="$1"
+    local interface_name="$1"
 
     get_network_interface_details "${interface_name}" | egrep '^\s+status:' | cut -d" " -f 2 || echo ""
 }
 
+function restart_and_check_network_interfaces()
+{
+    restart_network_interfaces &
+    sleep 1
+    check_network_status
+}
+
 function restart_network_interfaces()
 {
-    echo
-    echo "${FORMAT_BOLD}Restarting network interfaces${FORMAT_NORMAL}"
+    for interface_status in "down" "up"; do
+        for interface_name in "${INTERFACE_DEFAULT}" "${INTERFACE_TUNNEL}"; do
+            set_network_interface_status "${interface_name}" "${interface_status}"
+        done
+    done
+}
 
-    echo -n "   "
-    echo "Shutting down interface ${INTERFACE_DEFAULT}."
-    echo -n "   "
-    echo "Shutting down interface ${INTERFACE_TUNNEL}."
+function set_network_interface_status()
+{
+    if [[ $# -ne 2 ]]; then
+        exception 1 "Improper function call: ${FUNCNAME[0]} <interface-name> <interface-status>"
+    fi
 
-    ifconfig "${INTERFACE_DEFAULT}" down
-    ifconfig "${INTERFACE_TUNNEL}" down
+    local interface_name="$1"
+    local interface_status="$2"
 
-    sleep 2
+    if [[ "${interface_status}" != "up" ]] && [[ "${interface_status}" != "down" ]]; then
+        exception 1 "Forbidden interface status '${interface_status}'."
+    fi
 
-    echo -n "   "
-    echo "Starting up interface ${INTERFACE_DEFAULT}."
-    echo -n "   "
-    echo "Starting up interface ${INTERFACE_TUNNEL}."
-
-    ifconfig "${INTERFACE_DEFAULT}" up
-    ifconfig "${INTERFACE_TUNNEL}" up
-
-    check_network_status
+    ifconfig "${interface_name}" "${interface_status}"
 }
 
 function check_network_status()
@@ -75,16 +81,14 @@ function check_network_status()
     echo
     echo "${FORMAT_BOLD}Restarting network interfaces${FORMAT_NORMAL}"
 
-    checked_network_interface="${INTERFACE_DEFAULT}"
-
     local interface_statuses=()
     local counter=0
 
     while true; do
         local index=0
         for checked_network_interface in "${INTERFACE_DEFAULT}" "${INTERFACE_TUNNEL}"; do
-            interface_status="$(get_network_interface_status "${checked_network_interface}")"
-            interface_status_formatted="${FORMAT_FOREGROUND_RED}unknown${FORMAT_NORMAL}"
+            local interface_status="$(get_network_interface_status "${checked_network_interface}")"
+            local interface_status_formatted="${FORMAT_FOREGROUND_RED}unknown${FORMAT_NORMAL}"
 
             if [[ "${interface_status}" == "" ]]; then
                 exception 1 "There is a problem with interface ${checked_network_interface}."
