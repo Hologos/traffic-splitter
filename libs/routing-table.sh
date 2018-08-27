@@ -77,7 +77,9 @@ function add_routes_for_tunnel_interface()
         echo "${subnet}"
 
         # TODO: if error message, mark it somehow in the output
-        route -n add -net "${subnet}" "${GATEWAY_INTERFACE_TUNNEL}" > /dev/null #2>&1 # TODO: consider uncomment or removal
+        # FIX: route -n add -net <subnet> <gateway-ip> works only if the gateway is IP,
+        #      change it to -interface <interface-name>
+        route -n add -net "${subnet}" -interface "${INTERFACE_TUNNEL}" > /dev/null #2>&1 # TODO: consider uncomment or removal
     done
 }
 

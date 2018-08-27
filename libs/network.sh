@@ -16,7 +16,7 @@ function verify_network_interfaces()
             exception 1 "Interface ${interface} doesn't exist."
         fi
 
-        if [[ "${interface_status}" != "active" ]]; then
+        if [[ "${interface_status}" != "active" ]] && [[ "${interface_name}" != utun* ]]; then
             exception 1 "Interface ${interface_name} is not online."
         fi
     done
