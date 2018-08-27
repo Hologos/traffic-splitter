@@ -5,8 +5,8 @@ function exception()
         exit 1
     fi
 
-    rc="$1"
-    message="$2"
+    local rc="$1"
+    local message="$2"
 
     >&2 echo
     >&2 echo "Exception [code: ${rc}]: ${message}"

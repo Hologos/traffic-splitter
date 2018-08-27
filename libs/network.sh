@@ -9,8 +9,8 @@ function verify_network_interfaces()
     fi
 
     for interface_name in "${INTERFACE_DEFAULT}" "${INTERFACE_TUNNEL}"; do
-        interface_setup="$(get_network_interface_details "${interface_name}")"
-        interface_status="$(get_network_interface_status "${interface_name}")"
+        local interface_setup="$(get_network_interface_details "${interface_name}")"
+        local interface_status="$(get_network_interface_status "${interface_name}")"
 
         if [[ "${interface_setup}" == "" ]]; then
             exception 1 "Interface ${interface} doesn't exist."
@@ -28,7 +28,7 @@ function get_network_interface_details()
         exception 1 "Improper function call: ${FUNCNAME[0]} <interface-name>"
     fi
 
-    interface_name="$1"
+    local interface_name="$1"
 
     ifconfig "${interface_name}" 2> /dev/null || echo ""
 }
@@ -39,7 +39,7 @@ function get_network_interface_status()
         exception 1 "Improper function call: ${FUNCNAME[0]} <interface-name>"
     fi
 
-    interface_name="$1"
+    local interface_name="$1"
 
     get_network_interface_details "${interface_name}" | egrep '^\s+status:' | cut -d" " -f 2 || echo ""
 }
@@ -87,8 +87,8 @@ function check_network_status()
     while true; do
         local index=0
         for checked_network_interface in "${INTERFACE_DEFAULT}" "${INTERFACE_TUNNEL}"; do
-            interface_status="$(get_network_interface_status "${checked_network_interface}")"
-            interface_status_formatted="${FORMAT_FOREGROUND_RED}unknown${FORMAT_NORMAL}"
+            local interface_status="$(get_network_interface_status "${checked_network_interface}")"
+            local interface_status_formatted="${FORMAT_FOREGROUND_RED}unknown${FORMAT_NORMAL}"
 
             if [[ "${interface_status}" == "" ]]; then
                 exception 1 "There is a problem with interface ${checked_network_interface}."
