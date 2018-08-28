@@ -96,7 +96,7 @@ function verify_routes()
     echo "${FORMAT_UNDERLINE}Tunnel (interface: ${INTERFACE_TUNNEL})${FORMAT_NORMAL}"
 
     for hostname_to_test in ${TEST_HOSTNAMES_TUNNEL}; do
-        verify_route "${hostname_to_test}"
+        verify_route "${hostname_to_test}" "${INTERFACE_TUNNEL}"
     done
 
     echo
@@ -104,23 +104,26 @@ function verify_routes()
     echo "${FORMAT_UNDERLINE}Default (interface: ${INTERFACE_DEFAULT})${FORMAT_NORMAL}"
 
     for hostname_to_test in ${TEST_HOSTNAMES_DEFAULT}; do
-        verify_route "${hostname_to_test}"
+        verify_route "${hostname_to_test}" "${INTERFACE_DEFAULT}"
     done
 }
 
 function verify_route()
 {
-    if [[ $# -ne 1 ]]; then
-        exception 1 "Improper function call: ${FUNCNAME[0]} <hostname-to-test>"
+    if [[ $# -ne 2 ]]; then
+        exception 1 "Improper function call: ${FUNCNAME[0]} <hostname-to-test> <interface-name>"
     fi
 
     hostname_to_test="$1"
+    interface_name="$2"
 
-    test_result="$(route get "${hostname_to_test}" 2> /dev/null | egrep 'interface:\s+([^\s]+)' | awk '{ print $2 }' || echo "")"
+    real_interface_name="$(route get "${hostname_to_test}" 2> /dev/null | egrep 'interface:\s+([^\s]+)' | awk '{ print $2 }' || echo "")"
 
     echo -n "   "
 
-    if [[ "${test_result}" != "" ]]; then
+    if [[ "${real_interface_name}" != "${interface_name}" ]]; then
+        echo "${hostname_to_test} ... ${FORMAT_FOREGROUND_RED}wrong interface (${real_interface_name})${FORMAT_NORMAL}"
+    elif [[ "${real_interface_name}" != "" ]]; then
         echo "${hostname_to_test} ... ${FORMAT_FOREGROUND_GREEN}ok${FORMAT_NORMAL}"
     else
         echo "${hostname_to_test} ... ${FORMAT_FOREGROUND_RED}error${FORMAT_NORMAL}"
