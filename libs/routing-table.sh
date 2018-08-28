@@ -48,7 +48,7 @@ function get_gateway_of_interface()
         exception 1 "Improper function call: ${FUNCNAME[0]} <interface-name>"
     fi
 
-    interface_name="$1"
+    local interface_name="$1"
 
     netstat -nrf inet | egrep '^default\s+([^\s]+)(\s+[^\s]+){3}\s+' | egrep "${interface_name}$" | awk '{print $2}' || echo ""
 }
@@ -114,10 +114,10 @@ function verify_route()
         exception 1 "Improper function call: ${FUNCNAME[0]} <hostname-to-test> <interface-name>"
     fi
 
-    hostname_to_test="$1"
-    interface_name="$2"
+    local hostname_to_test="$1"
+    local interface_name="$2"
 
-    real_interface_name="$(route get "${hostname_to_test}" 2> /dev/null | egrep 'interface:\s+([^\s]+)' | awk '{ print $2 }' || echo "")"
+    local real_interface_name="$(route get "${hostname_to_test}" 2> /dev/null | egrep 'interface:\s+([^\s]+)' | awk '{ print $2 }' || echo "")"
 
     echo -n "   "
 

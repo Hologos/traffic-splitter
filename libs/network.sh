@@ -86,6 +86,7 @@ function check_network_status()
 
     while true; do
         local index=0
+
         for checked_network_interface in "${INTERFACE_DEFAULT}" "${INTERFACE_TUNNEL}"; do
             local interface_status="$(get_network_interface_status "${checked_network_interface}")"
             local interface_status_formatted="${FORMAT_FOREGROUND_RED}unknown${FORMAT_NORMAL}"
@@ -100,7 +101,7 @@ function check_network_status()
                 ;;
 
                 active)
-                    interface_gateway="$(get_gateway_of_interface "${checked_network_interface}")"
+                    local interface_gateway="$(get_gateway_of_interface "${checked_network_interface}")"
 
                     if [[ "${interface_gateway}" == "" ]]; then
                         interface_status="not-connected"
