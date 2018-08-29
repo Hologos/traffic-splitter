@@ -79,7 +79,7 @@ function add_routes_for_tunnel_interface()
         # TODO: if error message, mark it somehow in the output
         # FIX: route -n add -net <subnet> <gateway-ip> works only if the gateway is IP,
         #      route -n add -interface <interface-name> for utun* interfaces.
-        if [[ "${interface_name}" != utun* ]]; then
+        if [[ "${INTERFACE_TUNNEL}" != utun* ]]; then
             route -n add -net "${subnet}" "${GATEWAY_INTERFACE_TUNNEL}" > /dev/null #2>&1 # TODO: consider uncomment or removal
         else
             route -n add -net "${subnet}" -interface "${INTERFACE_TUNNEL}" > /dev/null #2>&1 # TODO: consider uncomment or removal
