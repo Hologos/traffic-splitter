@@ -39,7 +39,7 @@ function yaml_get_value()
 
     for search_match in \
         "$(echo "${config_content}" | egrep -E '^'"${key_path}"':[^:]+$' 2> /dev/null || echo "")" \
-        "$(echo "${config_content}" | egrep -E '^'"$key_path"':[0-9]+:[^:]+$' 2> /dev/null || echo "")"
+        "$(echo "${config_content}" | egrep -E '^'"${key_path}"':[0-9]+:[^:]+$' 2> /dev/null || echo "")"
     do
         if [[ "${search_match}" == "" ]]; then
             continue
