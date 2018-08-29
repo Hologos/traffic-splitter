@@ -13,7 +13,7 @@ function verify_network_interfaces()
         local interface_status="$(get_network_interface_status "${interface_name}")"
 
         if [[ "${interface_setup}" == "" ]]; then
-            exception 1 "Interface ${interface} doesn't exist."
+            exception 1 "Interface ${interface_name} doesn't exist."
         fi
 
         if [[ "${interface_status}" != "active" ]] && [[ "${interface_name}" != utun* ]]; then
