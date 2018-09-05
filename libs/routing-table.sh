@@ -74,15 +74,22 @@ function add_routes_for_tunnel_interface()
 
     for subnet in ${SUBNETS_TUNNEL}; do
         echo -n "   "
-        echo "${subnet}"
+        echo -n "${subnet}"
 
-        # TODO: if error message, mark it somehow in the output
+        local route_cmd_output=""
+
         # FIX: route -n add -net <subnet> <gateway-ip> works only if the gateway is IP,
         #      route -n add -interface <interface-name> for utun* interfaces.
         if [[ "${INTERFACE_TUNNEL}" != utun* ]]; then
-            route -n add -net "${subnet}" "${GATEWAY_INTERFACE_TUNNEL}" > /dev/null #2>&1 # TODO: consider uncomment or removal
+            route_cmd_output="$(route -n add -net "${subnet}" "${GATEWAY_INTERFACE_TUNNEL}" 2>&1)"
         else
-            route -n add -net "${subnet}" -interface "${INTERFACE_TUNNEL}" > /dev/null #2>&1 # TODO: consider uncomment or removal
+            route_cmd_output="$(route -n add -net "${subnet}" -interface "${INTERFACE_TUNNEL}" 2>&1)"
+        fi
+
+        if [[ "$(echo "${route_cmd_output}" | egrep -E "^add net \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}: gateway $GATEWAY_INTERFACE_TUNNEL\$")" != "" ]]; then
+            echo " ${FORMAT_FOREGROUND_YELLOW}(already exists)${FORMAT_NORMAL}"
+        else
+            echo
         fi
     done
 }
