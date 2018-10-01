@@ -1,6 +1,7 @@
 ALTER=1
 RESTART=0
 VERIFY=0
+NEEDS_SUDO=1
 
 function parse_input()
 {
@@ -49,6 +50,7 @@ function parse_input()
             -v | --verify)
                 VERIFY=1
                 ALTER=0
+                NEEDS_SUDO=0
             ;;
 
             -h | --help)
