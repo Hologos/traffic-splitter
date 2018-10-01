@@ -33,3 +33,17 @@ function exception()
 
     exit "${rc}"
 }
+
+function terminate()
+{
+    if [[ $# -ne 1 ]]; then
+        exception 1 "Improper function call: ${FUNCNAME[0]} <message>"
+    fi
+
+    local message="$1"
+
+    echo
+    echo "${message}"
+
+    exit 1
+}

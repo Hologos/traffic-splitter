@@ -29,7 +29,7 @@ ABSOLUTE_DIRPATH="$(dirname "${ABSOLUTE_DIRPATH}")"
 
 # checks if this is supported OS
 if [[ "$(uname)" != "Darwin" ]]; then
-    exception 1 "Only macOS is supported operating system."
+    terminate "Only macOS is supported operating system."
 fi
 
 # checks input params
@@ -47,7 +47,7 @@ TEST_HOSTNAMES_DEFAULT="$(yaml_get_value "${CONFIG_CONTENT}" "tests:default")"
 
 # checks if user has root priviledges
 if [[ "${NEEDS_SUDO}" -eq 1 ]] && [[ "${EUID}" -ne 0 ]]; then
-    exception 1 "Please, run this command as root (or with sudo)."
+    terminate "Please, run this command as root (or with sudo)."
 fi
 
 # restarts specified network interaces
