@@ -25,11 +25,11 @@ function get_gateways_of_interfaces()
     GATEWAY_INTERFACE_TUNNEL="$(get_gateway_of_interface "${INTERFACE_TUNNEL}")"
 
     if [[ "${GATEWAY_INTERFACE_DEFAULT}" == "" ]]; then
-        exception 1 "No default gateway for default interface found."
+        terminate "No default gateway for default interface found."
     fi
 
     if [[ "${GATEWAY_INTERFACE_TUNNEL}" == "" ]]; then
-        exception 1 "No default gateway for tunnel interface found."
+        terminate "No default gateway for tunnel interface found."
     fi
 
     echo -n "   "

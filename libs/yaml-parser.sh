@@ -7,7 +7,7 @@ function yaml_load()
     local config_filepath="$1"
 
     if [[ ! -r "${config_filepath}" ]]; then
-        exception 1 "Cannot open config file '${config_filepath}'."
+        terminate "Cannot open config file '${config_filepath}'."
     fi
 
     python -c '

@@ -1,11 +1,11 @@
 function verify_network_interfaces()
 {
     if [[ "${INTERFACE_DEFAULT}" == "" ]]; then
-        exception 1 "Default interface is not specified."
+        terminate "Default interface is not specified."
     fi
 
     if [[ "${INTERFACE_TUNNEL}" == "" ]]; then
-        exception 1 "Tunnel interface is not specified."
+        terminate "Tunnel interface is not specified."
     fi
 
     for interface_name in "${INTERFACE_DEFAULT}" "${INTERFACE_TUNNEL}"; do
@@ -13,11 +13,11 @@ function verify_network_interfaces()
         local interface_status="$(get_network_interface_status "${interface_name}")"
 
         if [[ "${interface_setup}" == "" ]]; then
-            exception 1 "Interface ${interface_name} doesn't exist."
+            terminate "Interface ${interface_name} doesn't exist."
         fi
 
         if [[ "${interface_status}" != "active" ]] && [[ "${interface_name}" != utun* ]]; then
-            exception 1 "Interface ${interface_name} is not online."
+            terminate "Interface ${interface_name} is not online."
         fi
     done
 }
@@ -70,7 +70,7 @@ function set_network_interface_status()
     local interface_status="$2"
 
     if [[ "${interface_status}" != "up" ]] && [[ "${interface_status}" != "down" ]]; then
-        exception 1 "Forbidden interface status '${interface_status}'."
+        terminate "Forbidden interface status '${interface_status}'."
     fi
 
     ifconfig "${interface_name}" "${interface_status}"
@@ -92,7 +92,7 @@ function check_network_status()
             local interface_status_formatted="${FORMAT_FOREGROUND_RED}unknown${FORMAT_NORMAL}"
 
             if [[ "${interface_status}" == "" ]]; then
-                exception 1 "There is a problem with interface ${checked_network_interface}."
+                terminate "There is a problem with interface ${checked_network_interface}."
             fi
 
             case "${interface_status}" in
@@ -112,7 +112,7 @@ function check_network_status()
                 ;;
 
                 *)
-                    exception 1 "Unknown interface status '${interface_status}' of interface ${checked_network_interface}."
+                    terminate "Unknown interface status '${interface_status}' of interface ${checked_network_interface}."
             esac
 
             interface_statuses[${index}]="${interface_status}"
@@ -134,7 +134,7 @@ function check_network_status()
 
         # safe break
         if [[ ${counter} -gt 30 ]]; then
-            exception 1 "Waiting for network interfaces coming online timed out."
+            terminate "Waiting for network interfaces coming online timed out."
         fi
 
         echo -ne "${FORMAT_UP_ONE_LINE}"

@@ -17,7 +17,7 @@ function parse_input()
                 shift
 
                 if [[ $# -lt 1 ]]; then
-                    exception 1 "Missing config filepath."
+                    terminate "Missing config filepath."
                 fi
 
                 CONFIG_FILEPATH="$1"
@@ -27,7 +27,7 @@ function parse_input()
                 shift
 
                 if [[ $# -lt 1 ]]; then
-                    exception 1 "Missing default interface name."
+                    terminate "Missing default interface name."
                 fi
 
                 INTERFACE_DEFAULT="$1"
@@ -37,7 +37,7 @@ function parse_input()
                 shift
 
                 if [[ $# -lt 1 ]]; then
-                    exception 1 "Missing tunnel interface name."
+                    terminate "Missing tunnel interface name."
                 fi
 
                 INTERFACE_TUNNEL="$1"
@@ -59,7 +59,7 @@ function parse_input()
             ;;
 
             *)
-                exception 1 "Unknown input parameter '$1'."
+                terminate "Unknown input parameter '$1'."
         esac
 
         shift
