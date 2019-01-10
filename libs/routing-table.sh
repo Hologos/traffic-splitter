@@ -86,7 +86,7 @@ function add_routes_for_tunnel_interface()
             route_cmd_output="$(route -n add -net "${subnet}" -interface "${INTERFACE_TUNNEL}" 2>&1)"
         fi
 
-        if [[ "$(echo "${route_cmd_output}" | egrep -E "^add net \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}: gateway $GATEWAY_INTERFACE_TUNNEL\$")" != "" ]]; then
+        if [[ "$(echo "${route_cmd_output}" | egrep -E "^add net \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}: gateway $GATEWAY_INTERFACE_TUNNEL: File exists\$")" != "" ]]; then
             echo " ${FORMAT_FOREGROUND_YELLOW}(already exists)${FORMAT_NORMAL}"
         else
             echo
