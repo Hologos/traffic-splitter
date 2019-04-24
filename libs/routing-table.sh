@@ -50,7 +50,7 @@ function get_gateway_of_interface()
 
     local interface_name="$1"
 
-    netstat -nrf inet | egrep '^default\s+([^\s]+)(\s+[^\s]+){3}\s+' | egrep "${interface_name}$" | awk '{ print $2 }' || echo ""
+    netstat -nrf inet | egrep '^default\s+([^\s]+)(\s+[^\s]+){3}\s+' | egrep "${interface_name}(\s*)$" | awk '{ print $2 }' || echo ""
 }
 
 function delete_default_routes_of_interfaces()
