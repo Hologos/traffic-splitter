@@ -5,11 +5,14 @@ NEEDS_SUDO=1
 
 function parse_input()
 {
-    # TODO: better handling
-    if [[ $# -ne 6 ]] && [[ $# -ne 7 ]]; then
+    if [[ $# -eq 0 ]]; then
         usage
         exit 1
     fi
+
+    CONFIG_FILEPATH_SET=0
+    INTERFACE_DEFAULT_SET=0
+    INTERFACE_TUNNEL_SET=0
 
     while [[ $# -ne 0 ]] && [[ "$1" != "" ]]; do
         case $1 in
@@ -21,6 +24,7 @@ function parse_input()
                 fi
 
                 CONFIG_FILEPATH="$1"
+                CONFIG_FILEPATH_SET=1
             ;;
 
             -d | --default-interface)
@@ -31,6 +35,7 @@ function parse_input()
                 fi
 
                 INTERFACE_DEFAULT="$1"
+                INTERFACE_DEFAULT_SET=1
             ;;
 
             -t | --tunnel-interface)
@@ -41,6 +46,7 @@ function parse_input()
                 fi
 
                 INTERFACE_TUNNEL="$1"
+                INTERFACE_TUNNEL_SET=1
             ;;
 
             -r | --restart-interfaces)
@@ -64,4 +70,12 @@ function parse_input()
 
         shift
     done
+
+    if [[ ${CONFIG_FILEPATH_SET} -eq 0 ]]; then
+        terminate "Configuration filepath was not set."
+    elif [[ ${INTERFACE_DEFAULT_SET} -eq 0 ]]; then
+        terminate "Default interface name was not set."
+    elif [[ ${INTERFACE_TUNNEL_SET} -eq 0 ]]; then
+        terminate "Tunnel interface name was not set."
+    fi
 }
