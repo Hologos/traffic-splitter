@@ -10,7 +10,7 @@ function yaml_load()
         terminate "Cannot open config file '${config_filepath}'."
     fi
 
-    python -c '
+    python3 -c '
 import yaml, sys, os
 
 def recursive_print(param, prefix):
@@ -21,9 +21,9 @@ def recursive_print(param, prefix):
         for index, value in enumerate(param):
             recursive_print(value, prefix + str(index) +":")
     else:
-        print prefix + str(param)
+        print(prefix + str(param))
 
-config_content = yaml.safe_load(sys.stdin)
+config_content = yaml.safe_load(sys.stdin.read())
 recursive_print(config_content, "")
 ' < "${config_filepath}" 2> /dev/null || exception 1 "Cannot load yaml config due to an error."
 }

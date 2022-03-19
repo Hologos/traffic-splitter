@@ -32,8 +32,8 @@ if [[ "$(uname)" != "Darwin" ]]; then
     terminate "Only macOS is supported operating system."
 fi
 
-if [[ "$(pip freeze 2>/dev/null | grep 'PyYAML')" == "" ]]; then
-    terminate "Python module PyYAML needs to be installed (execute: pip install PyYAML)."
+if [[ "$(pip3 freeze 2>/dev/null | grep 'PyYAML')" == "" ]]; then
+    terminate "Python module PyYAML needs to be installed (execute: pip3 install PyYAML)."
 fi
 
 # checks input params

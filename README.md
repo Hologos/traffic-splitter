@@ -2,12 +2,18 @@
 
 traffic-splitter alters the routing table and enables you to route some traffic via a defined network interface.
 
+## Dependencies
+
+First, make sure you have all those things installed (at least the system ones):
+
+- `python3`: to be able to parse yaml config files
+
 ## Installation
 
 This script requires PyYAML to be installed. You can install it with:
 
 ```
-pip install PyYAML
+pip3 install PyYAML
 ```
 
 ## Usage
